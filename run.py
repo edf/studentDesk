@@ -1,60 +1,46 @@
 #! /usr/bin/python
-import argparse
+#
+# working code from frequently used modules
+#
 
-__author__ = ''
+import datetime
+import argparse
+import csv
+import json
+import re
+
+timeNow = datetime.datetime.now().strftime("%Y-%m%d-%H%M-%S")
+timestampedFilename = "data-" + timeNow
 
 parser = argparse.ArgumentParser(description='read a file from CLI argument and write output.')
-parser.add_argument('-i', '--input',  help='Input filename', required=True)
-parser.add_argument('-o', '--output', help='Output filename', required=True)
+parser.add_argument('-i', '--input',  help='Input CSV filename', required=True)
+parser.add_argument('-o', '--output', help='Output prefix to JSON filename', required=True)
 args = parser.parse_args()
+
+outJsonfile = args.output + "-" + timestampedFilename + ".json"
 
 # sanity check arguments
 print ("Input file: %s" % args.input)
-print ("Output file: %s" % args.output)
-
-import csv
-import json
+print ("Output file: %s" % outJsonfile)
 
 data = {}
 data['people'] = []
 
 with open(args.input, 'rb') as f:
-    # TODO read file
     csv_reader = csv.reader(f, delimiter=',')
     next(csv_reader)  # skip the heading
-    # TODO loop through file
     for line in csv_reader:
+        #use next line for degugging 
+        #print(line)
         data['people'].append({
-            # 'name': 'Scott',
-            # 'website': 'stackabuse.com',
-            # 'from': 'Nebraska',
             'username': line[1],
             'email': line[2],
             'desk': line[0]
         })
-        # data['people'].append({
-        #     'name': 'Larry',
-        #     'website': 'google.com',
-        #     'from': 'Michigan'
-        # })
-        # data['people'].append({
-        #     'name': 'Tim',
-        #     'website': 'apple.com',
-        #     'from': 'Alabama'
-        # })
-        # TODO print var1
-        # print(line[1])
 
-###################
-import datetime
-
-timeNow = datetime.datetime.now().strftime("%Y-%m%d-%H%M-%S")
-
-timestampFilename = "data-" + timeNow + ".json"
-
-with open(timestampFilename, 'w') as outfile:
+with open(outJsonfile, 'w') as outfile:
     json.dump(data, outfile, sort_keys=True)
 
 jsonString = json.dumps(data, indent=4, sort_keys=True)
 print(jsonString)
-print ('\n\n  Current date/time: {}'.format(timeNow))
+print('\n')
